@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     int num_teams = 0;
     fscanf(fp, "%d", &num_teams);
 //    printf("%d\n", num_teams);
+    float *arraytodelete = calloc(num_teams, sizeof(float));
     for (int i = 0; i < num_teams; i++) {
         Team *team = (Team *) malloc(sizeof(Team));
         if (team == NULL) {
@@ -59,9 +60,14 @@ int main(int argc, char **argv) {
 
         team->punctaj /= (float) team->nr_players;
 //        printf("Number of points per team %d: %.2f \n", i, team->punctaj);
+        arraytodelete[i] = team->punctaj;
+        addAtBeginning(&teams, team);
     }
     printf("\n");
-
+    for (int k = 0; k < num_teams; k++) {
+        sort_for_delete(arraytodelete, num_teams);
+//        printf("%d = %.2f \n", k, arraytodelete[k]);
+    }
 
     fclose(fp);
 

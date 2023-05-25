@@ -14,4 +14,22 @@ void addAtBeginning(Team **teams, Team *team) {
 
     }
 }
+void print_to_file(Team *head, FILE *out) {
+    while (head != NULL) {
+        fprintf(out, "%s\n", head->name);
+        head = head->next;
+    }
+}
 
+void sort_for_delete(float v[100], int n) {
+    float aux;
+    for (int j = 0; j < n - 1; j++) {
+        for (int i = 0; i < n - 1 - j; i++) {
+            if (v[i] > v[i + 1]) {
+                aux = v[i];
+                v[i] = v[i + 1];
+                v[i + 1] = aux;
+            }
+        }
+    }
+}
