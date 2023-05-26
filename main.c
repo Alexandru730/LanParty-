@@ -68,7 +68,17 @@ int main(int argc, char **argv) {
         sort_for_delete(arraytodelete, num_teams);
 //        printf("%d = %.2f \n", k, arraytodelete[k]);
     }
+// Sorting and deletion logic
+    int numar_stergeri = 2;
 
+    while (1) {
+        numar_stergeri *= 2;
+        if (num_teams < numar_stergeri)
+            break;
+    }
+
+    numar_stergeri = num_teams - numar_stergeri / 2;
+//    printf(" ZI BAA %d", numar_stergeri);
     fclose(fp);
 
     return 0;
