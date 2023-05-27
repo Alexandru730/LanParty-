@@ -62,3 +62,87 @@ void delete(Team **head, float points) {
         }
     }
 }
+
+//crearea si initializarea cozii
+Queue *createQueue() {
+    Queue *q;
+    q = (Queue *) malloc(sizeof(Queue));
+    if (q == NULL) return NULL;
+    q->front = q->rear = NULL;
+    return q;
+}
+
+//verificam daca coada este goala
+int isEmpty(Queue *q) {
+    return (q->front == NULL);
+}
+
+//Adaugam un meci in coada
+void enQueue(Queue *q, Team *team) {
+    Team *newMatch = (Team *) malloc(sizeof(Team));
+    *newMatch = *team;
+    newMatch->next = NULL;
+// nodurile noi se adauga la finalul cozii
+    if (q->rear == NULL) {
+        q->rear = newMatch;
+        q->front = newMatch;
+    }
+// daca nu exista niciun nod in coada
+    else {
+        (q->rear)->next = newMatch;
+        (q->rear) = newMatch;
+    }
+// daca exita un singur element in coada
+    if (q->front == NULL) q->front = q->rear;
+}
+
+// Funție pentru extragerea unui element din coadă și returnarea sa
+// Returnează un pointer la elementul extras (de tip MATCH)
+Team *deQueue(Queue *q) {
+    Team *aux;
+    if (isEmpty(q)) return NULL;
+    aux = q->front;
+    q->front = (q->front)->next;
+    return aux;
+}
+
+// Crearea si initializarea stivei
+Stack *createStack() {
+    Stack *stack = (Stack *) malloc(sizeof(Stack));
+    stack->top = NULL;
+    return stack;
+}
+
+// Verificarea daca stiva este goala
+int isStackEmpty(Stack *stack) {
+    return (stack->top == NULL);
+}
+
+// Adaugarea unui element in varful stivei|push
+void push(Stack *stack, Team *team) {
+    Team *newMatch = (Team *) malloc(sizeof(Team));
+    *newMatch = *team;
+    newMatch->next = (struct Team *) stack->top;
+    stack->top = (struct Team *) newMatch;
+}
+
+//Extrage un element din varful stivei
+
+Team *pop(Stack *stack) {
+    if (isStackEmpty(stack)) {
+        return NULL;
+    }
+
+    Team *removedMatch = stack->top;
+    Team *removedTeam = (Team *) malloc(sizeof(Team));
+    *removedTeam = *removedMatch;
+    stack->top = stack->top->next;
+    free(removedMatch);
+
+    return removedTeam;
+}
+
+//adaugam punct echipei castigatoare
+void addPoint(Team *team) {
+    team->punctaj = team->punctaj + 1;
+}

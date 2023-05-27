@@ -29,6 +29,29 @@ typedef struct Team {
 
 } Team;
 //typedef struct team Team;
+typedef struct Match {
+    Team *team1;
+    struct Match *next;
+} Match;
+
+typedef struct Queue {
+    Team *front, *rear;
+} Queue;
+
+// Definirea structurii pentru stivă
+typedef struct stack {
+    Team *top;
+} Stack;
+
+int isEmpty(Queue *q);
+
+Team *deQueue(Queue *q);
+
+Queue *createQueue();
+
+int isStackEmpty(Stack *stack);
+
+Stack *createStack();
 
 void addAtBeginning(Team **teams, Team *team);
 
