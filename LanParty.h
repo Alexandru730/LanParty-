@@ -60,3 +60,7 @@ void print_to_file(Team *head, FILE *out);
 void sort_for_delete(float v[100], int n);
 
 void delete(Team **head, float points);
+
+void deleteLeadingSpaces(char *s);
+
+void createMatchesAndStacks(Team**, FILE*);

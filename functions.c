@@ -146,3 +146,96 @@ Team *pop(Stack *stack) {
 void addPoint(Team *team) {
     team->punctaj = team->punctaj + 1;
 }
+
+void deleteLeadingSpaces(char *s) {
+    int  i,j;
+    for(i=0;s[i]==' '||s[i]=='\t';i++);
+
+    for(j=0;s[i];i++){
+        s[j++]=s[i];}
+    s[j]='\0';
+    for(i=0;s[i]!='\0';i++){
+        if(s[i]!=' '&& s[i]!='\t')
+            j=i;}
+    s[j+1]='\0';
+}
+
+//Functia principala de creare meci si stive;
+void createMatchesAndStacks(Team **teams, FILE *out) {
+    Queue *matchQueue = createQueue();
+    Stack *winnersStack = createStack();
+    Stack *losersStack = createStack();
+
+    Team *currentTeam = *teams;
+    while (currentTeam != NULL) {//cream meciurile
+        enQueue(matchQueue, currentTeam);
+        currentTeam = currentTeam->next;
+    }
+    int roundNo = 1;
+    Team *lastEightTeams = NULL; // Lista pentru urmatoarele puncte
+    while (!isEmpty(matchQueue)) {
+        fprintf(out, "\n--- ROUND NO:%d\n", roundNo);
+        while (!isEmpty(matchQueue)) {
+
+            Team *currentMatch1 = deQueue(matchQueue);
+            Team *currentMatch2 = deQueue(matchQueue);
+            char aux1[100], aux2[100];
+
+            strcpy(aux1, currentMatch1->name);
+            strcpy(aux2, currentMatch2->name);
+            aux1[strlen(aux1) - 1] = '\0'; // imi lua un \n daca foloseam direct currentMatch1
+            aux2[strlen(aux2) - 1] = '\0';
+            deleteLeadingSpaces(aux1);
+            deleteLeadingSpaces(aux2);
+            int numSpaces1 = 33 - strlen(aux1);
+            int numSpaces2 = 33 - strlen(aux2);
+            fprintf(out, "%s%*s", aux1, numSpaces1, "");
+            fprintf(out, "-");
+            for (int k = 0; k < numSpaces2; k++) {
+                fprintf(out, " ");
+            }
+            fprintf(out, "%s\n", aux2);
+            //punem conditiile pentru punctaj sa aflam castigatorul, practic simulam meciurile
+            if (currentMatch1->punctaj > currentMatch2->punctaj) {
+                //echipa 1 win
+                currentMatch1->punctaj = currentMatch1->punctaj + 1;
+                push(winnersStack, currentMatch1);
+                push(losersStack, currentMatch2);
+            } else {
+                //ecchipa 2 win
+                currentMatch2->punctaj = currentMatch2->punctaj + 1;
+                push(winnersStack, currentMatch2);
+                push(losersStack, currentMatch1);
+            }
+//        free(currentMatch);
+        }
+        int count = 0;
+        int aux = 0;
+        fprintf(out, "\nWINNERS OF ROUND NO:%d\n", roundNo);
+        while (!isStackEmpty(winnersStack) ) {
+            aux++;
+            Team *team = pop(winnersStack);
+            enQueue(matchQueue, team);
+            char aux3[100];
+            strcpy(aux3, team->name);
+            int numSpaces3 = 35 - strlen(aux3);
+            aux3[strlen(aux3) - 1] = '\0';
+            fprintf(out, "%s%*s", aux3, numSpaces3, "");
+            fprintf(out, "-  %.2f\n", team->punctaj);
+            free(team);
+        }
+        while (!isStackEmpty(losersStack)) {
+            Team *team = pop(losersStack);
+            free(team);
+        }
+
+        if (aux == 1)// rezolvare segm fault
+            break;
+
+        roundNo++;
+    }
+
+    free(matchQueue);
+    free(winnersStack);
+    free(losersStack);
+}

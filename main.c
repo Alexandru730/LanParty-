@@ -2,13 +2,26 @@
 
 int main(int argc, char **argv) {
     Team *teams = NULL;
-    FILE *fp;
+    Team *top8Winners = NULL;
+    Queue *q;
+    q = createQueue();
+    if (q == NULL) {
+        printf("Failed to create queue.\n");
+        exit(1);
+    }
+    FILE *fp, *out, *in;
     fp = fopen(argv[2], "r");
-
-    if (fp == NULL) {
+    in = fopen(argv[1], "r");
+    out = fopen(argv[3], "w");
+    if (fp == NULL || in == NULL || out == NULL) {
         printf("ERROR IN OPENING\n");
         exit(1);
     }
+
+
+    int cerinta1, cerinta2, cerinta3, cerinta4, cerinta5;
+    fscanf(in, "%d %d %d %d %d", &cerinta1, &cerinta2, &cerinta3, &cerinta4, &cerinta5);
+
     int num_teams = 0;
     fscanf(fp, "%d", &num_teams);
 //    printf("%d\n", num_teams);
@@ -60,6 +73,7 @@ int main(int argc, char **argv) {
 
         team->punctaj /= (float) team->nr_players;
 //        printf("Number of points per team %d: %.2f \n", i, team->punctaj);
+        deleteLeadingSpaces(team->name);
         arraytodelete[i] = team->punctaj;
         addAtBeginning(&teams, team);
     }
@@ -68,7 +82,7 @@ int main(int argc, char **argv) {
         sort_for_delete(arraytodelete, num_teams);
 //        printf("%d = %.2f \n", k, arraytodelete[k]);
     }
-// Sorting and deletion logic
+    // Sorting and deleting logic
     int numar_stergeri = 2;
 
     while (1) {
@@ -79,7 +93,28 @@ int main(int argc, char **argv) {
 
     numar_stergeri = num_teams - numar_stergeri / 2;
 //    printf(" ZI BAA %d", numar_stergeri);
+
+    if (cerinta1 == 1 && cerinta2 == 0 && cerinta3 == 0) {
+        print_to_file(teams, out);
+    }
+
+    if (cerinta2 == 1 && cerinta3 == 0) {
+        for (int i = 0; i < numar_stergeri; i++) {
+            delete(&teams, arraytodelete[i]);
+        }
+        print_to_file(teams, out);
+    }
+
+    if (cerinta2 == 1 && cerinta3 == 1) {
+        for (int i = 0; i < numar_stergeri; i++) {
+            delete(&teams, arraytodelete[i]);
+        }
+        print_to_file(teams, out);
+        createMatchesAndStacks(&teams, out);
+    }
     fclose(fp);
+    fclose(in);
+    fclose(out);
 
     return 0;
 }
