@@ -22,19 +22,6 @@ void print_to_file(Team *head, FILE *out) {
     }
 }
 
-void sort_for_delete(float v[100], int n) {
-    float aux;
-    for (int j = 0; j < n - 1; j++) {
-        for (int i = 0; i < n - 1 - j; i++) {
-            if (v[i] > v[i + 1]) {
-                aux = v[i];
-                v[i] = v[i + 1];
-                v[i + 1] = aux;
-            }
-        }
-    }
-}
-
 void delete(Team **head, float points) {
 // 0. Lista goala
     if (*head == NULL) return;
@@ -62,6 +49,20 @@ void delete(Team **head, float points) {
         }
     }
 }
+
+void sort_for_delete(float v[100], int n) {
+    float aux;
+    for (int j = 0; j < n - 1; j++) {
+        for (int i = 0; i < n - 1 - j; i++) {
+            if (v[i] > v[i + 1]) {
+                aux = v[i];
+                v[i] = v[i + 1];
+                v[i + 1] = aux;
+            }
+        }
+    }
+}
+
 
 //crearea si initializarea cozii
 Queue *createQueue() {
@@ -148,32 +149,52 @@ void addPoint(Team *team) {
 }
 
 void deleteLeadingSpaces(char *s) {
-    int  i,j;
-    for(i=0;s[i]==' '||s[i]=='\t';i++);
+    int i, j;
+    for (i = 0; s[i] == ' ' || s[i] == '\t'; i++);
 
-    for(j=0;s[i];i++){
-        s[j++]=s[i];}
-    s[j]='\0';
-    for(i=0;s[i]!='\0';i++){
-        if(s[i]!=' '&& s[i]!='\t')
-            j=i;}
-    s[j+1]='\0';
+    for (j = 0; s[i]; i++) {
+        s[j++] = s[i];
+    }
+    s[j] = '\0';
+    for (i = 0; s[i] != '\0'; i++) {
+        if (s[i] != ' ' && s[i] != '\t')
+            j = i;
+    }
+    s[j + 1] = '\0';
+}
+
+void print(Team *head) {
+    while (head != NULL) {
+        printf("%s\n", head->name);
+        head = head->next;
+    }
+}
+
+int size(Stack *stack) {
+    int count = 0;
+    Team *current = stack->top;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+    return count;
 }
 
 //Functia principala de creare meci si stive;
-void createMatchesAndStacks(Team **teams, FILE *out) {
+void createMatchesAndStacks(Team **teams, FILE *out, Team **lastEightTeams, int numteams2) {
     Queue *matchQueue = createQueue();
     Stack *winnersStack = createStack();
     Stack *losersStack = createStack();
-
+    *lastEightTeams = NULL;
     Team *currentTeam = *teams;
     while (currentTeam != NULL) {//cream meciurile
         enQueue(matchQueue, currentTeam);
         currentTeam = currentTeam->next;
     }
     int roundNo = 1;
-    Team *lastEightTeams = NULL; // Lista pentru urmatoarele puncte
+    lastEightTeams = NULL; // Lista pentru urmatoarele puncte
     while (!isEmpty(matchQueue)) {
+        numteams2 /= 2;
         fprintf(out, "\n--- ROUND NO:%d\n", roundNo);
         while (!isEmpty(matchQueue)) {
 
@@ -207,14 +228,19 @@ void createMatchesAndStacks(Team **teams, FILE *out) {
                 push(winnersStack, currentMatch2);
                 push(losersStack, currentMatch1);
             }
+            // Verificăm numărul de echipe din stiva câștigătorilor
+
 //        free(currentMatch);
         }
-        int count = 0;
         int aux = 0;
         fprintf(out, "\nWINNERS OF ROUND NO:%d\n", roundNo);
-        while (!isStackEmpty(winnersStack) ) {
+        while (!isStackEmpty(winnersStack)) {
             aux++;
+
             Team *team = pop(winnersStack);
+            if (numteams2 == 8) {//altcumva nu aveam cum pentru ca mie imi ia stiva de 16 si imi scade una cate una, si cand ajunge la 8 atunci imi afiseaza, dar la 8 din prima runda nu doar atunci cand sunt numai 8 echipe castigatoare
+                addAtBeginning(&lastEightTeams, team);
+            }
             enQueue(matchQueue, team);
             char aux3[100];
             strcpy(aux3, team->name);
@@ -224,6 +250,7 @@ void createMatchesAndStacks(Team **teams, FILE *out) {
             fprintf(out, "-  %.2f\n", team->punctaj);
             free(team);
         }
+
         while (!isStackEmpty(losersStack)) {
             Team *team = pop(losersStack);
             free(team);
@@ -234,8 +261,59 @@ void createMatchesAndStacks(Team **teams, FILE *out) {
 
         roundNo++;
     }
-
+    print(lastEightTeams);
     free(matchQueue);
     free(winnersStack);
     free(losersStack);
+}
+
+Node *newNode(Team *team) {
+    Node *newNode = (Node *) malloc(sizeof(Node));
+    newNode->team = team;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+Node *insert(Node *node, Team *team) {
+    // daca ( sub) arborele este gol , creaza nod
+    if (node == NULL) return newNode(team);
+    // Compararea punctajelor
+    if (team->punctaj > node->team->punctaj) {
+        node->left = insert(node->left, team);
+    } else if (team->punctaj < node->team->punctaj) {
+        node->right = insert(node->right, team);
+    } else {
+        // Daca punctajele sunt egale, se compara numele in ordine descrescatoare
+        if (strcmp(team->name, node->team->name) > 0) {
+            node->left = insert(node->left, team);
+        } else {
+            node->right = insert(node->right, team);
+        }
+    }
+
+    return node;
+}
+// Functie pentru eliberarea memoriei ocupate de arborele BST
+void freeBST(Node* root) {
+    if (root != NULL) {
+        freeBST(root->left);
+        freeBST(root->right);
+        free(root->team);
+        free(root);
+    }
+}
+// Funcție pentru afișarea conținutului arborelui în ordine descrescătoare
+void printTree(Node *node) {
+    if (node == NULL) return;
+    printTree(node->left);
+    printf("%s - %.2f\n", node->team->name, node->team->punctaj);
+    printTree(node->right);
+}
+
+// Funcție pentru eliberarea memoriei ocupate de arbore
+void freeTree(Node *node) {
+    if (node == NULL) return;
+    freeTree(node->left);
+    freeTree(node->right);
+    free(node);
 }

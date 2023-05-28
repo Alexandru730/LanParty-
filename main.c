@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
     Team *teams = NULL;
-    Team *top8Winners = NULL;
+    Team *lastEightTeams = NULL;
     Queue *q;
     q = createQueue();
     if (q == NULL) {
@@ -21,7 +21,6 @@ int main(int argc, char **argv) {
 
     int cerinta1, cerinta2, cerinta3, cerinta4, cerinta5;
     fscanf(in, "%d %d %d %d %d", &cerinta1, &cerinta2, &cerinta3, &cerinta4, &cerinta5);
-
     int num_teams = 0;
     fscanf(fp, "%d", &num_teams);
 //    printf("%d\n", num_teams);
@@ -82,18 +81,19 @@ int main(int argc, char **argv) {
         sort_for_delete(arraytodelete, num_teams);
 //        printf("%d = %.2f \n", k, arraytodelete[k]);
     }
+    int numteams2;
     // Sorting and deleting logic
-    int numar_stergeri = 2;
+   int numar_stergeri = 2;
 
     while (1) {
         numar_stergeri *= 2;
         if (num_teams < numar_stergeri)
             break;
     }
-
+    numteams2 = numar_stergeri/2;
     numar_stergeri = num_teams - numar_stergeri / 2;
-//    printf(" ZI BAA %d", numar_stergeri);
 
+    Node *root = NULL;
     if (cerinta1 == 1 && cerinta2 == 0 && cerinta3 == 0) {
         print_to_file(teams, out);
     }
@@ -110,8 +110,9 @@ int main(int argc, char **argv) {
             delete(&teams, arraytodelete[i]);
         }
         print_to_file(teams, out);
-        createMatchesAndStacks(&teams, out);
+        createMatchesAndStacks(&teams, out, &lastEightTeams, numteams2);
     }
+
     fclose(fp);
     fclose(in);
     fclose(out);
