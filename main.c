@@ -110,9 +110,9 @@ int main(int argc, char **argv) {
             delete(&teams, arraytodelete[i]);
         }
         print_to_file(teams, out);
-        createMatchesAndStacks(&teams, out, &lastEightTeams, numteams2);
+        createMatchesAndStacks(&teams, out, numteams2);
     }
-
+//    print(lastEightTeams);
     fclose(fp);
     fclose(in);
     fclose(out);

@@ -163,10 +163,11 @@ void deleteLeadingSpaces(char *s) {
     s[j + 1] = '\0';
 }
 
-void print(Team *head) {
-    while (head != NULL) {
-        printf("%s\n", head->name);
-        head = head->next;
+void print(Team *teams) {
+    Team *current = teams;
+    while (current != NULL) {
+        printf("%s\n%.2f\n", current->name, current->punctaj);
+        current = current->next;
     }
 }
 
@@ -179,89 +180,100 @@ int size(Stack *stack) {
     }
     return count;
 }
+void printMatchDetails(FILE *out, Team *team1, Team *team2) {
+    char aux1[100], aux2[100];
+
+    // Copy team names and format them
+    strcpy(aux1, team1->name);
+    strcpy(aux2, team2->name);
+    aux1[strlen(aux1) - 1] = '\0';
+    aux2[strlen(aux2) - 1] = '\0';
+    deleteLeadingSpaces(aux1);
+    deleteLeadingSpaces(aux2);
+
+    // Calculate spaces for alignment
+    int numSpaces1 = 33 - strlen(aux1);
+    int numSpaces2 = 33 - strlen(aux2);
+
+    // Print match details
+    fprintf(out, "%s%*s", aux1, numSpaces1, "");
+    fprintf(out, "-");
+    for (int k = 0; k < numSpaces2; k++) {
+        fprintf(out, " ");
+    }
+    fprintf(out, "%s\n", aux2);
+}
+
+// Function to simulate the match and update stacks
+void simulateMatch(Stack *winnersStack, Stack *losersStack, Team *team1, Team *team2) {
+    if (team1->punctaj > team2->punctaj) {
+        team1->punctaj += 1;
+        push(winnersStack, team1);
+        push(losersStack, team2);
+    } else {
+        team2->punctaj += 1;
+        push(winnersStack, team2);
+        push(losersStack, team1);
+    }
+}
+
+// Function to print winner details
+void printWinnerDetails(FILE *out, Team *team) {
+    char aux3[100];
+    strcpy(aux3, team->name);
+    int numSpaces3 = 35 - strlen(aux3);
+    aux3[strlen(aux3) - 1] = '\0';
+    fprintf(out, "%s%*s", aux3, numSpaces3, "");
+    fprintf(out, "-  %.2f\n", team->punctaj);
+}
 
 //Functia principala de creare meci si stive;
-void createMatchesAndStacks(Team **teams, FILE *out, Team **lastEightTeams, int numteams2) {
+void createMatchesAndStacks(Team **teams, FILE *out, int numteams2) {
+    Team *lastEightTeams = NULL;
     Queue *matchQueue = createQueue();
     Stack *winnersStack = createStack();
     Stack *losersStack = createStack();
-    *lastEightTeams = NULL;
+    // Create match queue
     Team *currentTeam = *teams;
-    while (currentTeam != NULL) {//cream meciurile
+    while (currentTeam != NULL) {
         enQueue(matchQueue, currentTeam);
         currentTeam = currentTeam->next;
     }
     int roundNo = 1;
-    lastEightTeams = NULL; // Lista pentru urmatoarele puncte
     while (!isEmpty(matchQueue)) {
         numteams2 /= 2;
         fprintf(out, "\n--- ROUND NO:%d\n", roundNo);
-        while (!isEmpty(matchQueue)) {
 
+        while (!isEmpty(matchQueue)) {
             Team *currentMatch1 = deQueue(matchQueue);
             Team *currentMatch2 = deQueue(matchQueue);
-            char aux1[100], aux2[100];
-
-            strcpy(aux1, currentMatch1->name);
-            strcpy(aux2, currentMatch2->name);
-            aux1[strlen(aux1) - 1] = '\0'; // imi lua un \n daca foloseam direct currentMatch1
-            aux2[strlen(aux2) - 1] = '\0';
-            deleteLeadingSpaces(aux1);
-            deleteLeadingSpaces(aux2);
-            int numSpaces1 = 33 - strlen(aux1);
-            int numSpaces2 = 33 - strlen(aux2);
-            fprintf(out, "%s%*s", aux1, numSpaces1, "");
-            fprintf(out, "-");
-            for (int k = 0; k < numSpaces2; k++) {
-                fprintf(out, " ");
-            }
-            fprintf(out, "%s\n", aux2);
-            //punem conditiile pentru punctaj sa aflam castigatorul, practic simulam meciurile
-            if (currentMatch1->punctaj > currentMatch2->punctaj) {
-                //echipa 1 win
-                currentMatch1->punctaj = currentMatch1->punctaj + 1;
-                push(winnersStack, currentMatch1);
-                push(losersStack, currentMatch2);
-            } else {
-                //ecchipa 2 win
-                currentMatch2->punctaj = currentMatch2->punctaj + 1;
-                push(winnersStack, currentMatch2);
-                push(losersStack, currentMatch1);
-            }
-            // Verificăm numărul de echipe din stiva câștigătorilor
-
-//        free(currentMatch);
+            //
+            printMatchDetails(out, currentMatch1, currentMatch2);
+            // Simulate the match and update stacks
+            simulateMatch(winnersStack, losersStack, currentMatch1, currentMatch2);
         }
+
         int aux = 0;
         fprintf(out, "\nWINNERS OF ROUND NO:%d\n", roundNo);
         while (!isStackEmpty(winnersStack)) {
             aux++;
-
             Team *team = pop(winnersStack);
-            if (numteams2 == 8) {//altcumva nu aveam cum pentru ca mie imi ia stiva de 16 si imi scade una cate una, si cand ajunge la 8 atunci imi afiseaza, dar la 8 din prima runda nu doar atunci cand sunt numai 8 echipe castigatoare
+            if (numteams2 == 8) {
                 addAtBeginning(&lastEightTeams, team);
             }
             enQueue(matchQueue, team);
-            char aux3[100];
-            strcpy(aux3, team->name);
-            int numSpaces3 = 35 - strlen(aux3);
-            aux3[strlen(aux3) - 1] = '\0';
-            fprintf(out, "%s%*s", aux3, numSpaces3, "");
-            fprintf(out, "-  %.2f\n", team->punctaj);
-            free(team);
+            // Print winner details
+            printWinnerDetails(out, team);
+//            free(team); aici ii dadea free si imi lua adresa noului castigator adica al winnerului numarul1, 2 zile mi-a mancat linia asta
         }
-
         while (!isStackEmpty(losersStack)) {
             Team *team = pop(losersStack);
             free(team);
         }
-
-        if (aux == 1)// rezolvare segm fault
+        if (aux == 1)
             break;
-
         roundNo++;
     }
-    print(lastEightTeams);
     free(matchQueue);
     free(winnersStack);
     free(losersStack);
