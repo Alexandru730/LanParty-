@@ -94,3 +94,4 @@ void print_to_file(Team *, FILE *);
 
 void writeMatchesToFile(Team *team1, Team *team2, FILE *out);
 
+void freeTeams(Team *head);

@@ -8,7 +8,7 @@
 Team* readTeamFromFile(FILE* fp, Team **teams, float *arraytodelete, int index) {
     Team* team = (Team*)malloc(sizeof(Team));
     if (team == NULL) {
-        printf("Memory allocation failed!");
+        printf("eroare la alocare!");
         exit(1);
     }
     fscanf(fp, "%d", &team->nr_players);
@@ -17,13 +17,13 @@ Team* readTeamFromFile(FILE* fp, Team **teams, float *arraytodelete, int index) 
     int l = strlen(teamName);
     team->name = (char*)malloc((l + 1) * sizeof(char));
     if (team->name == NULL) {
-        printf("Memory allocation failed!");
+        printf("eroare la alocare!");
         exit(1);
     }
     strcpy(team->name, teamName);
     team->players = readPlayersFromFile(fp, team->nr_players);
     if (team->players == NULL) {
-        printf("Memory allocation failed!");
+        printf("eroare la alocare!");
         exit(1);
     }
     // Calculam punctajul echipei citite
@@ -40,7 +40,7 @@ Team* readTeamFromFile(FILE* fp, Team **teams, float *arraytodelete, int index) 
 Player* readPlayersFromFile(FILE* fp, int num_players) {
     Player* players = (Player*)malloc(num_players * sizeof(Player));
     if (players == NULL) {
-        printf("Memory allocation failed!");
+        printf("eroare la alocare!");
         exit(1);
     }
 
@@ -58,7 +58,7 @@ Player* readPlayersFromFile(FILE* fp, int num_players) {
         l = strlen(surname);
         players[i].secondName = (char*)malloc((l + 1) * sizeof(char));
         if (players[i].secondName == NULL) {
-            printf("Memory allocation failed!");
+            printf("eroare la alocare!");
             exit(1);
         }
         strcpy(players[i].secondName, surname);
@@ -211,23 +211,7 @@ void deleteLeadingSpaces(char *s) {
     }
     s[j + 1] = '\0';
 }
-void print(Team *teams) {
-    Team *current = teams;
-    while (current != NULL) {
-        printf("%s\n%.2f\n", current->name, current->punctaj);
-        current = current->next;
-    }
-}
-// Returneaza numarul de elemente din stiva
-int size(Stack *stack) {
-    int count = 0;
-    Team *current = stack->top;
-    while (current != NULL) {
-        count++;
-        current = current->next;
-    }
-    return count;
-}
+
 // Afiseaza meciurile in fisierul de iesire
 void printMatchDetails(FILE *out, Team *team1, Team *team2) {
     char aux1[100], aux2[100];
@@ -312,7 +296,7 @@ void createMatchesAndStacks(Team **teams, FILE *out, int numteams2, int cerinta4
             break;
         roundNo++;}
     if (cerinta4 == 1) { createAndPrintLastEightRanking(lastEightTeams, out); }
-    free(matchQueue);free(winnersStack);free(losersStack);
+    free(matchQueue);free(winnersStack);free(losersStack); free(currentTeam);
 }
 
 //Functie pentru crearea unui nou nod
@@ -336,6 +320,15 @@ void createAndPrintLastEightRanking(Team *lastEightTeams, FILE *out) {
 
     // Eliberez
     freeBST(bstRoot);
+}
+// Functie pentru eliberarea memoriei alocata pentru lista de echipe
+void freeTeams(Team *head) {
+    Team *current = head;
+    while (current != NULL) {
+        Team *temp = current;
+        current = current->next;
+        free(temp);
+    }
 }
 
 // Functie pentru inserarea unui nod in arbore binar de cautare

@@ -5,12 +5,12 @@ int main(int argc, char **argv) {
     Queue *q;
     q = createQueue();
     if (q == NULL) {
-        printf("Failed to create queue.\n");
+        printf("creare esuata.\n");
         exit(1);}
     FILE *fp, *out, *in;
     fp = fopen(argv[2], "r");    in = fopen(argv[1], "r");    out = fopen(argv[3], "w");
     if (fp == NULL || in == NULL || out == NULL) {
-        printf("ERROR IN OPENING\n");
+        printf("eroare la deschidere\n");
         exit(1);
     }
     int cerinta1, cerinta2, cerinta3, cerinta4, cerinta5; // cerintele din fisierul de intrare
@@ -59,5 +59,6 @@ int main(int argc, char **argv) {
     }
     // inchidere fisiere
     fclose(fp); fclose(in); fclose(out);
+    freeTeams(teams); // eliberam memoria pentru toate echipele
     return 0;
 }
