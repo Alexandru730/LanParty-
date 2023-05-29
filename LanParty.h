@@ -48,10 +48,15 @@ typedef struct Node {
     struct Node *left, *right;
 } Node;
 
+Team* readTeamFromFile(FILE* fp, Team **teams, float *arraytodelete, int index);
+
+Player* readPlayersFromFile(FILE* fp, int num_players);
 
 int isEmpty(Queue *q);
 
 Team *deQueue(Queue *q);
+
+void enQueue(Queue *q, Team *team1);
 
 Queue *createQueue();
 
@@ -61,15 +66,11 @@ Stack *createStack();
 
 void createMatchesAndStacks(Team **teams, FILE *out, int nu, int cc);
 
-void addAtBeginning2(Team **head, Team *team);
-
 void addPoint(Team *team);
 
 Team *pop(Stack *stack);
 
 void push(Stack *stack, Team *team);
-
-void enQueue(Queue *q, Team *team1);
 
 void sort_for_delete(float v[100], int n);
 
@@ -87,14 +88,9 @@ Player *createPlayer(char *name, char *surrname, int points);
 
 void freeBST(Node *root);
 
-void printList(Team *head);
-
-void print(Team *head);
-
 void printTree(Node *node, FILE *out);
 
 void print_to_file(Team *, FILE *);
 
 void writeMatchesToFile(Team *team1, Team *team2, FILE *out);
 
-void printRec(Team *head);
