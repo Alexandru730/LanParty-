@@ -105,12 +105,20 @@ int main(int argc, char **argv) {
         print_to_file(teams, out);
     }
 
-    if (cerinta2 == 1 && cerinta3 == 1) {
+    if (cerinta2 == 1 && cerinta3 == 1 && cerinta4 != 1) {
         for (int i = 0; i < numar_stergeri; i++) {
             delete(&teams, arraytodelete[i]);
         }
         print_to_file(teams, out);
-        createMatchesAndStacks(&teams, out, numteams2);
+        createMatchesAndStacks(&teams, out, numteams2, cerinta4);
+    }
+    if(cerinta3 == 1 && cerinta4 == 1){
+        for (int i = 0; i < numar_stergeri; i++) {
+            delete(&teams, arraytodelete[i]);
+        }
+        print_to_file(teams, out);
+        createMatchesAndStacks(&teams, out, numteams2, cerinta4);
+//        createAndPrintLastEightRanking(lastEightTeams, out);
     }
 //    print(lastEightTeams);
     fclose(fp);

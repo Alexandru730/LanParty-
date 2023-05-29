@@ -48,9 +48,6 @@ typedef struct Node {
     struct Node *left, *right;
 } Node;
 
-void printTop8Winners(Team *top8Winners);
-
-void printList(Team *head);
 
 int isEmpty(Queue *q);
 
@@ -62,7 +59,7 @@ int isStackEmpty(Stack *stack);
 
 Stack *createStack();
 
-void createMatchesAndStacks(Team **teams, FILE *out, int);
+void createMatchesAndStacks(Team **teams, FILE *out, int nu, int cc);
 
 void addAtBeginning2(Team **head, Team *team);
 
@@ -78,17 +75,23 @@ void sort_for_delete(float v[100], int n);
 
 void delete(Team **head, float points);
 
-Team *copyTeam(Team *team);
-
 void addAtBeginning(Team **teams, Team *team);
+
+void createAndPrintLastEightRanking(Team *lastEightTeams, FILE *out);
 
 void deleteLeadingSpaces(char *);
 
+Node *insert(Node *node, Team *team);
+
 Player *createPlayer(char *name, char *surrname, int points);
+
+void freeBST(Node *root);
 
 void printList(Team *head);
 
 void print(Team *head);
+
+void printTree(Node *node, FILE *out);
 
 void print_to_file(Team *, FILE *);
 

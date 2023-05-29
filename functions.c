@@ -180,6 +180,7 @@ int size(Stack *stack) {
     }
     return count;
 }
+
 void printMatchDetails(FILE *out, Team *team1, Team *team2) {
     char aux1[100], aux2[100];
 
@@ -228,11 +229,9 @@ void printWinnerDetails(FILE *out, Team *team) {
 }
 
 //Functia principala de creare meci si stive;
-void createMatchesAndStacks(Team **teams, FILE *out, int numteams2) {
+void createMatchesAndStacks(Team **teams, FILE *out, int numteams2, int cerinta4) {
     Team *lastEightTeams = NULL;
-    Queue *matchQueue = createQueue();
-    Stack *winnersStack = createStack();
-    Stack *losersStack = createStack();
+    Queue *matchQueue = createQueue();  Stack *winnersStack = createStack();  Stack *losersStack = createStack();
     // Create match queue
     Team *currentTeam = *teams;
     while (currentTeam != NULL) {
@@ -243,16 +242,11 @@ void createMatchesAndStacks(Team **teams, FILE *out, int numteams2) {
     while (!isEmpty(matchQueue)) {
         numteams2 /= 2;
         fprintf(out, "\n--- ROUND NO:%d\n", roundNo);
-
         while (!isEmpty(matchQueue)) {
-            Team *currentMatch1 = deQueue(matchQueue);
-            Team *currentMatch2 = deQueue(matchQueue);
-            //
+            Team *currentMatch1 = deQueue(matchQueue);    Team *currentMatch2 = deQueue(matchQueue);
             printMatchDetails(out, currentMatch1, currentMatch2);
             // Simulate the match and update stacks
-            simulateMatch(winnersStack, losersStack, currentMatch1, currentMatch2);
-        }
-
+            simulateMatch(winnersStack, losersStack, currentMatch1, currentMatch2);}
         int aux = 0;
         fprintf(out, "\nWINNERS OF ROUND NO:%d\n", roundNo);
         while (!isStackEmpty(winnersStack)) {
@@ -274,10 +268,8 @@ void createMatchesAndStacks(Team **teams, FILE *out, int numteams2) {
             break;
         roundNo++;
     }
-    free(matchQueue);
-    free(winnersStack);
-    free(losersStack);
-}
+    if(cerinta4 == 1) {createAndPrintLastEightRanking(lastEightTeams, out);}
+    free(matchQueue);    free(winnersStack);  free(losersStack);}
 
 Node *newNode(Team *team) {
     Node *newNode = (Node *) malloc(sizeof(Node));
@@ -285,6 +277,24 @@ Node *newNode(Team *team) {
     newNode->left = newNode->right = NULL;
     return newNode;
 }
+
+// Function to create and print the BST for last eight teams
+void createAndPrintLastEightRanking(Team *lastEightTeams, FILE *out) {
+    Node *bstRoot = NULL;
+
+    // Insert the last eight teams into the BST
+    while (lastEightTeams != NULL) {
+        bstRoot = insert(bstRoot, lastEightTeams);
+        lastEightTeams = lastEightTeams->next;
+    }
+
+        fprintf(out, "\nTOP 8 TEAMS:\n");
+        printTree(bstRoot, out);
+
+    // Free the memory occupied by the BST
+    freeBST(bstRoot);
+}
+
 
 Node *insert(Node *node, Team *team) {
     // daca ( sub) arborele este gol , creaza nod
@@ -305,8 +315,9 @@ Node *insert(Node *node, Team *team) {
 
     return node;
 }
+
 // Functie pentru eliberarea memoriei ocupate de arborele BST
-void freeBST(Node* root) {
+void freeBST(Node *root) {
     if (root != NULL) {
         freeBST(root->left);
         freeBST(root->right);
@@ -314,18 +325,17 @@ void freeBST(Node* root) {
         free(root);
     }
 }
-// Funcție pentru afișarea conținutului arborelui în ordine descrescătoare
-void printTree(Node *node) {
-    if (node == NULL) return;
-    printTree(node->left);
-    printf("%s - %.2f\n", node->team->name, node->team->punctaj);
-    printTree(node->right);
-}
 
-// Funcție pentru eliberarea memoriei ocupate de arbore
-void freeTree(Node *node) {
+// Funcție pentru afișarea conținutului arborelui în ordine descrescătoare
+void printTree(Node *node, FILE *out) {
+    char aux[100];
     if (node == NULL) return;
-    freeTree(node->left);
-    freeTree(node->right);
-    free(node);
+    printTree(node->left, out);
+    strcpy(aux, node->team->name);
+    int numSpaces3 = 35 - strlen(aux);
+    aux[strlen(aux) - 1] = '\0';
+    fprintf(out, "%s%*s", aux, numSpaces3, "");
+    fprintf(out, "-  %.2f\n", node->team->punctaj);
+
+    printTree(node->right, out);
 }
