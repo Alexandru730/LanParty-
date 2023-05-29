@@ -320,6 +320,7 @@ void createAndPrintLastEightRanking(Team *lastEightTeams, FILE *out) {
 
     // Eliberez
     freeBST(bstRoot);
+    freeTeams(lastEightTeams);
 }
 // Functie pentru eliberarea memoriei alocata pentru lista de echipe
 void freeTeams(Team *head) {
