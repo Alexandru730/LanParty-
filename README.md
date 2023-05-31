@@ -32,7 +32,26 @@ To use the LanParty program, follow these steps:
 2. Run the executable file generated.
 3. Provide the input file containing team and player data.
 4. Specify the output file to store the results.
+### Makefile
 
+You can use the following Makefile to build and run the project:
+
+```make
+# This is a sample Makefile
+
+# Variables
+CC = gcc
+CFLAGS = -Wall -Wextra
+TARGET = myprogram
+
+# Rules
+all: $(TARGET)
+
+$(TARGET): main.c
+    $(CC) $(CFLAGS) -o $@ $<
+
+clean:
+    rm -f $(TARGET)
 ## File Format
 
 The input file should follow a specific format to ensure proper parsing of team and player data. Here's an example of the file format:
