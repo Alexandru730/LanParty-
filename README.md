@@ -37,21 +37,21 @@ To use the LanParty program, follow these steps:
 
 The input file should follow a specific format to ensure proper parsing of team and player data. Here's an example of the file format:
 
-3
-Team A
-John Doe 100
-Jane Smith 150
-Mark Johnson 200
-2
-Team B
-Sarah Williams 120
-Robert Davis 180
-4
-Team C
-Michael Brown 90
-Emily Wilson 110
-David Taylor 130
-Lisa Anderson 170
+3<br>
+Team A<br>
+John Doe 100<br>
+Jane Smith 150<br>
+Mark Johnson 200<br>
+2<br>
+Team B<br>
+Sarah Williams 120<br>
+Robert Davis 180<br>
+4<br>
+Team C<br>
+Michael Brown 90<br>
+Emily Wilson 110<br>
+David Taylor 130<br>
+Lisa Anderson 170<br>
 
 
 Each team entry starts with the number of players in the team, followed by the team name. After that, each player is listed with their first name, last name, and performance points.
