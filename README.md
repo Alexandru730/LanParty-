@@ -1,6 +1,5 @@
 # LanParty-
 
-	# LanParty
 
 This is a program for managing a LAN party tournament. It reads team and player data from a file, simulates matches between teams, and generates rankings based on the results.
 
@@ -37,8 +36,6 @@ To use the LanParty program, follow these steps:
 You can use the following Makefile to build and run the project:
 
 ```make
-# This is a sample Makefile
-
 # Variables
 CC = gcc
 CFLAGS = -Wall -Wextra
@@ -52,6 +49,8 @@ $(TARGET): main.c
 
 clean:
     rm -f $(TARGET)
+    
+ 
 ## File Format
 
 The input file should follow a specific format to ensure proper parsing of team and player data. Here's an example of the file format:
