@@ -36,19 +36,10 @@ To use the LanParty program, follow these steps:
 You can use the following Makefile to build and run the project:
 
 ```make
-# Variables
-CC = gcc
-CFLAGS = -Wall -Wextra
-TARGET = myprogram
-
-# Rules
-all: $(TARGET)
-
-$(TARGET): main.c
-    $(CC) $(CFLAGS) -o $@ $<
-
+build:
+	gcc main.c functions.c -o lanParty
 clean:
-    rm -f $(TARGET)
+	rm -f lanParty
     
  
 ## File Format
@@ -73,7 +64,3 @@ Lisa Anderson 170<br>
 
 
 Each team entry starts with the number of players in the team, followed by the team name. After that, each player is listed with their first name, last name, and performance points.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
