@@ -41,7 +41,7 @@ build:
 clean:
 	rm -f lanParty
     
- 
+ ```
 ## File Format
 
 The input file should follow a specific format to ensure proper parsing of team and player data. Here's an example of the file format:
